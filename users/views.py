@@ -8,7 +8,8 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 @login_required(login_url="/login")
 def index(request):
-    return render(request, "users/index.html")
+    user = Profile.objects.get(user=request.user)
+    return render(request, "users/index.html", {"user": user})
 
 
 def signup(request):
@@ -35,7 +36,7 @@ def signup(request):
                 user_model = User.objects.get(username=username)
                 profile = Profile.objects.create(user=user_model, id_user=user_model.id)
                 profile.save()
-                return redirect("/settings")
+                return redirect("/index")
         else:
             messages.info(request, "Password Not Matching")
             return redirect("/signup")
@@ -74,5 +75,43 @@ def logout(request):
 
 
 @login_required(login_url="/login")
-def settings(request):
-    return render(request, "users/setting.html")
+def settings(request, slug):
+    user = Profile.objects.get(user=request.user)
+    if request.method == "POST":
+        if request.FILES.get("image") == None:
+            image = user.profile_image
+            user.user.username = request.POST["firstname"]
+            user.last_name = request.POST["lastname"]
+            user.user.email = request.POST["email"]
+            user.bio = request.POST["bio"]
+            user.location = request.POST["location"]
+            user.profile_image = image
+            user.save()
+            return redirect("/")
+        if request.FILES.get("image") != None:
+            image = request.FILES.get("image")
+            user.user.username = request.POST["firstname"]
+            user.last_name = request.POST["lastname"]
+            user.user.email = request.POST["email"]
+            user.bio = request.POST["bio"]
+            user.location = request.POST["location"]
+            user.profile_image = image
+            user.save()
+            return redirect("/")
+
+    else:
+        return render(request, "users/setting.html", {"user": user})
+
+
+@login_required(login_url="/login")
+def upload(request):
+    if request.method == "POST":
+        user = request.user
+        body = request.POST["body"]
+        image = request.FILES.get("image")
+        video = request.FILES.get("video")
+        new_post = Post.objects.create(user=user, body=body, image=image, video=video)
+        new_post.save()
+        return redirect("/")
+    else:
+        return render(request, "/")
