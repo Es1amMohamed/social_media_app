@@ -40,6 +40,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to="post_images", blank=True, null=True)
     video = models.FileField(
         upload_to="videos_uploaded",
+        blank=True,
         null=True,
         validators=[
             FileExtensionValidator(
@@ -47,9 +48,18 @@ class Post(models.Model):
             )
         ],
     )
-    link = models.IntegerField(blank=True, null=True, default=0)
+    like = models.IntegerField(blank=True, null=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.username
+
+
+class LikePost(models.Model):
+    post_id = models.CharField(max_length=500)
+    username = models.CharField(max_length=100)
+    comment = models.TextField(max_length=1000, blank=True, null=True)
+
+    def __str__(self):
+        return self.username

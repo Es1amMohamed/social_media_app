@@ -9,7 +9,9 @@ from django.contrib.auth.decorators import login_required
 @login_required(login_url="/login")
 def index(request):
     user = Profile.objects.get(user=request.user)
-    return render(request, "users/index.html", {"user": user})
+    posts = Post.objects.all()
+    context = {"user": user, "posts": posts}
+    return render(request, "users/index.html", context)
 
 
 def signup(request):
@@ -115,3 +117,25 @@ def upload(request):
         return redirect("/")
     else:
         return render(request, "/")
+
+
+@login_required(login_url="/login")
+def like(request):
+    username = request.user.username
+    post_id = request.GET.get("post_id")
+    comment = request.GET.get("comment")
+
+    post = Post.objects.get(id=post_id)
+    like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
+    if like_filter == None:
+        new_like = LikePost.objects.create(
+            post_id=post_id, username=username, comment=comment
+        )
+        new_like.save()
+        post.like += 1
+        return redirect("/")
+    else:
+        like_filter.delete()
+        post.like -= 1
+        post.save()
+        return redirect("/")
