@@ -31,6 +31,8 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         return reverse("users:settings", kwargs={"slug": self.slug})
+    def get_profile_url(self):
+        return reverse("users:profile", kwargs={"slug": self.slug})
 
 
 class Post(models.Model):
@@ -63,3 +65,11 @@ class LikePost(models.Model):
 
     def __str__(self):
         return self.username
+
+
+class Followers(models.Model):
+    follower = models.CharField(max_length=100)
+    user = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.user
