@@ -50,7 +50,7 @@ def signup(request):
 def profile(request, slug):
     user = User.objects.get(username=slug)
     profile = Profile.objects.get(user=user)
-    posts = Post.objects.filter(user=user)
+    posts = Post.objects.filter(author=user)
     length = len(posts)
     context = {"user": user, "profile": profile, "posts": posts, "length": length}
     
@@ -66,7 +66,7 @@ def login(request):
             user = auth.authenticate(username=username, password=password)
             if user is not None:
                 auth.login(request, user)
-                return redirect("/profile")
+                return redirect("/")
             else:
                 messages.info(request, "Wrong Password")
                 return redirect("/login")

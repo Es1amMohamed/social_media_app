@@ -37,7 +37,7 @@ class Profile(models.Model):
 
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="author")
     body = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to="post_images", blank=True, null=True)
     video = models.FileField(
@@ -55,7 +55,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.user.username
+        return self.author.user.username
 
 
 class LikePost(models.Model):
