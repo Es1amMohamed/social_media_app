@@ -3,16 +3,17 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from .models import *
 from django.contrib.auth.decorators import login_required
-
+from django.template import Context, Template
 
 # Create your views here.
 @login_required(login_url="/login")
 def index(request):
     user = Profile.objects.get(user=request.user)
     posts = Post.objects.all()
-    context = {"user": user, "posts": posts}
+    users = Profile.objects.all()
+    context = {"user": user, "posts": posts, 'users': users}
     return render(request, "users/index.html", context)
-
+ 
 
 def signup(request):
     if request.method == "POST":
@@ -50,7 +51,7 @@ def signup(request):
 def profile(request, slug):
     user = User.objects.get(username=slug)
     profile = Profile.objects.get(user=user)
-    posts = Post.objects.filter(author=user)
+    posts = Post.objects.filter(author=profile)
     length = len(posts)
     context = {"user": user, "profile": profile, "posts": posts, "length": length}
     
@@ -154,10 +155,13 @@ def follow(request):
         if Followers.objects.filter(follower=follower, user=user).exists():
             delete_follow = Followers.objects.get(follower=follower, user=user)
             delete_follow.delete()
-            return redirect("/profile/"+user)
+            return redirect("/profile/"+follower)
         else:
             new_follow = Followers.objects.create(follower=follower, user=user)
             new_follow.save()
-            return redirect("/profile/"+user)
-    else:
-        return render(request, "users/profile.html")
+            return redirect("/profile/"+follower)
+    
+    return render(request, "users/profile.html")
+        
+    
+        

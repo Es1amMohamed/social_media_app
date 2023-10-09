@@ -199,18 +199,23 @@
 
                     <!-- left sidebar-->
                     <div class="space-y-5 flex-shrink-0 lg:w-7/12">
-
+ 
                         {% for post in posts reversed %}
+                            
+                            
+                            
                         <div class="bg-white shadow rounded-md  -mx-2 lg:mx-0">
                             <!-- post header-->
                             <div class="flex justify-between items-center px-4 py-3">
                                 <div class="flex flex-1 items-center space-x-4">
-                                    <a href="{{user.get_profile_url}}">
+                                    
+                                    <a href="{{post.author.get_profile_url}}">
+                                        
                                         <div class="bg-gradient-to-tr from-yellow-600 to-pink-600 p-0.5 rounded-full">  
-                                            <img src="{{post.posts.profile_image.url}}" class="bg-gray-200 border border-white rounded-full w-8 h-8">
+                                            <img src="{{post.author.profile_image.url}}" class="bg-gray-200 border border-white rounded-full w-8 h-8">
                                         </div>
                                     </a>
-                                    <span class="block capitalize font-semibold "> {{post.posts.user.username}} </span>
+                                    <span class="block capitalize font-semibold "> {{post.author.user.username}} </span>
                                 </div>
                               <div>
                                 <a href="#"> <i class="icon-feather-more-horizontal text-2xl hover:bg-gray-200 rounded-full p-2 transition -mr-1 "></i> </a>
@@ -342,6 +347,7 @@
                             </div>
     
                         </div>
+                        
                         {% endfor %}
                         
     
