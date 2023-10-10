@@ -5,15 +5,16 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.template import Context, Template
 
+
 # Create your views here.
 @login_required(login_url="/login")
 def index(request):
     user = Profile.objects.get(user=request.user)
     posts = Post.objects.all()
     users = Profile.objects.all()
-    context = {"user": user, "posts": posts, 'users': users}
+    context = {"user": user, "posts": posts, "users": users}
     return render(request, "users/index.html", context)
- 
+
 
 def signup(request):
     if request.method == "POST":
@@ -49,13 +50,29 @@ def signup(request):
 
 @login_required(login_url="/login")
 def profile(request, slug):
+    follower = User.objects.get(username=request.user.username)
     user = User.objects.get(username=slug)
     profile = Profile.objects.get(user=user)
     posts = Post.objects.filter(author=profile)
     length = len(posts)
-    context = {"user": user, "profile": profile, "posts": posts, "length": length}
-    
-    return render(request, "users/profile.html" , context)
+    if Followers.objects.filter(follower=user, user=follower).first():
+        is_following = "Unfollow"
+    else:
+        is_following = "follow"
+    user_following = len(Followers.objects.filter(user=slug))
+    user_followers = len(Followers.objects.filter(follower=slug))
+    context = {
+        "follower": follower,
+        "user": user,
+        "profile": profile,
+        "posts": posts,
+        "length": length,
+        "is_following": is_following,
+        "user_following": user_following,
+        "user_followers": user_followers,
+    }
+
+    return render(request, "users/profile.html", context)
 
 
 def login(request):
@@ -147,21 +164,19 @@ def like(request):
         post.save()
         return redirect("/")
 
+
 @login_required(login_url="/login")
 def follow(request):
     if request.method == "POST":
-        follower = request.POST['follower']
+        follower = request.POST["follower"]
         user = request.POST["user"]
         if Followers.objects.filter(follower=follower, user=user).exists():
             delete_follow = Followers.objects.get(follower=follower, user=user)
             delete_follow.delete()
-            return redirect("/profile/"+follower)
+            return redirect("/profile/" + follower)
         else:
             new_follow = Followers.objects.create(follower=follower, user=user)
             new_follow.save()
-            return redirect("/profile/"+follower)
-    
+            return redirect("/profile/" + follower)
+
     return render(request, "users/profile.html")
-        
-    
-        

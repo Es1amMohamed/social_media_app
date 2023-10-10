@@ -31,6 +31,7 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         return reverse("users:settings", kwargs={"slug": self.slug})
+
     def get_profile_url(self):
         return reverse("users:profile", kwargs={"slug": self.slug})
 
