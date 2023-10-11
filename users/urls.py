@@ -14,4 +14,5 @@ urlpatterns = [
     path("upload", views.upload, name="upload"),
     path("like", views.like, name="like"),
     path("follow", views.follow, name="follow"),
+    path("search", views.search, name="search"),
 ]

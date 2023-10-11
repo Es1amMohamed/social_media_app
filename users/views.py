@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from .models import *
 from django.contrib.auth.decorators import login_required
-from django.template import Context, Template
+from itertools import chain
 
 
 # Create your views here.
@@ -12,7 +12,19 @@ def index(request):
     user = Profile.objects.get(user=request.user)
     posts = Post.objects.all()
     users = Profile.objects.all()
-    context = {"user": user, "posts": posts, "users": users}
+    user_following = Followers.objects.filter(user=request.user.username)
+    user_following_list = []
+    feed = []
+    for users_follow in user_following:
+        user_following_list.append(users_follow.follower)
+        print(users_follow.follower)
+    for usernames in user_following_list:
+        print(usernames)
+        user_posted = User.objects.filter(username=usernames)
+        # feed_lists = Post.objects.filter(author=user_posted.slug)
+        feed.append(user_posted)
+    feed_list = list(chain(*feed))
+    context = {"user": user, "posts": posts, "users": users, "feed": feed_list}
     return render(request, "users/index.html", context)
 
 
@@ -180,3 +192,33 @@ def follow(request):
             return redirect("/profile/" + follower)
 
     return render(request, "users/profile.html")
+
+
+def search(request):
+    user_profile = Profile.objects.get(user=request.user)
+    if request.method == "POST":
+        search_name = request.POST["search_name"]
+        search_result = User.objects.filter(username__icontains=search_name)
+        username_list = []
+        username_profile_list = []
+        for users in search_result:
+            username_list.append(users.id)
+        for id in username_list:
+            profile = Profile.objects.filter(id_user=id)
+            username_profile_list.append(profile)
+        username_profile_list = list(chain(*username_profile_list))
+        return render(
+            request,
+            "users/search.html",
+            {
+                "user_profile": user_profile,
+                "username_profile_list": username_profile_list,
+                "search_name": search_name,
+            },
+        )
+    no_result = "No result found"
+    return render(
+        request,
+        "users/search.html",
+        {"user_profile": user_profile, "no_result": no_result},
+    )
