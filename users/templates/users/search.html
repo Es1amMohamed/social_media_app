@@ -23,33 +23,27 @@
             {% csrf_token %}
             <header style="margin-top: -23px;">
                 <div class="header_inner">
-                    <div class="left-side">
-                        <!-- Logo -->
-                        <div id="logo" class=" uk-hidden@s">
-                            <a href="/">
-                                <!-- <b><h1 style="text-transform: uppercase;">Social Book</h1></b> -->
-                            </a>
+                    <form action='/search' method='POST'>
+                        {% csrf_token %}
+                        <div class="left-side">
+                            <!-- Logo -->
+                            <div id="logo" class=" uk-hidden@s">
+                                <a href="home.html">
+                                    <b><h1 style="text-transform: uppercase;">Social Book</h1></b>
+                                </a>
+                            </div>
+    
+                            <!--<div class="triger" uk-toggle="target: #wrapper ; cls: sidebar-active">
+                                <i class="uil-bars"></i>
+                            </div>-->
+    
+                            {% comment %} <div class="header_search"> {% endcomment %}
+                                <input type="text" name='search_name' placeholder="Search for username..">&nbsp; &nbsp;
+                                <button type='submit'><i class='fa fa-search fa-1x'></i></button>
+                            {% comment %} </div> {% endcomment %}
+    
                         </div>
-
-                        <!--<div class="triger" uk-toggle="target: #wrapper ; cls: sidebar-active">
-                            <i class="uil-bars"></i>
-                        </div>-->
-
-                        <!-- <div class="header_search"> -->
-                            
-                                <input type="text" name="username" placeholder="Search for username..">&nbsp; &nbsp;
-                                <button type="submit"><i class="fa fa-search fa-1x"></i></button>
-                            
-                            <!-- <div class="icon-search">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div> -->
-                        <!-- </div> -->
-
-                    </div>
+                    </form>
                     <div class="right-side lg:pr-4">
                         <!-- welcome user -->
                         <a href="{{user_profile.get_profile_url}}" class="">
